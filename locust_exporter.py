@@ -28,7 +28,7 @@ class LocustCollector(object):
 
     for err in response['errors']:
         metric = GaugeMetricFamily('locust_errors', 'Locust requests errors', labels=['path', 'method'])
-        metric.add_metric([err['name'], err['method']], value=err['occurences'])
+        metric.add_metric([str(err['name']), str(err['method'])], value=err['occurences'])
         yield metric
 
     if 'slave_count' in response:
@@ -37,7 +37,7 @@ class LocustCollector(object):
     yield GaugeMetricFamily('locust_fail_ratio', 'Locust failure ratio', value=response['fail_ratio'])
 
     metric = GaugeMetricFamily('locust_state', 'State of the locust swarm', labels=['state'])
-    metric.add_metric([response['state']], 1)
+    metric.add_metric([str(response['state'])], 1)
     yield metric
 
     stats_metrics_gause = ['avg_content_length','avg_response_time','current_rps','max_response_time','median_response_time','min_response_time']
@@ -46,13 +46,13 @@ class LocustCollector(object):
         metric = GaugeMetricFamily('locust_requests_' + mtr, 'locust requests ' + mtr, labels=['path', 'method'])
         for stat in response['stats']:
             if not 'Total' in stat['name']:
-                metric.add_metric([stat['name'], str(stat['method'])], stat[mtr])
+                metric.add_metric([str(stat['name']), str(stat['method'])], stat[mtr])
         yield metric
     for mtr in stats_metrics_count:
         metric = CounterMetricFamily('locust_requests_' + mtr, 'locust requests ' + mtr, labels=['path', 'method'])
         for stat in response['stats']:
             if not 'Total' in stat['name']:
-                metric.add_metric([stat['name'], str(stat['method'])], stat[mtr])
+                metric.add_metric([str(stat['name']), str(stat['method'])], stat[mtr])
         yield metric
 
 
