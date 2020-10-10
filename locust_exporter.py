@@ -3,6 +3,7 @@
 # Requires prometheus_client library:
 # sudo pip install prometheus_client
 from prometheus_client import start_http_server, Metric, REGISTRY
+from prometheus_client.core import GaugeMetricFamily, CounterMetricFamily
 import json
 import requests
 import sys
@@ -23,39 +24,37 @@ class LocustCollector(object):
 
     response = json.loads(response)
 
-    stats_metrics=['avg_content_length','avg_response_time','current_rps','max_response_time','median_response_time','min_response_time','num_failures','num_requests']
+    yield GaugeMetricFamily('locust_user_count', 'Swarmed users', value=response['user_count'])
 
-    metric = Metric('locust_user_count', 'Swarmed users', 'gauge')
-    metric.add_sample('locust_user_count', value=response['user_count'], labels={})
-    yield metric
-
-    metric = Metric('locust_errors', 'Locust requests errors', 'gauge')
     for err in response['errors']:
-        metric.add_sample('locust_errors', value=err['occurences'], labels={'path':err['name'], 'method':err['method']})
-    yield metric
+        metric = GaugeMetricFamily('locust_errors', 'Locust requests errors', labels=['path', 'method'])
+        metric.add_metric([err['name'], err['method']], value=err['occurences'])
+        yield metric
 
     if 'slave_count' in response:
-        metric = Metric('locust_slave_count', 'Locust number of slaves', 'gauge')
-        metric.add_sample('locust_slave_count', value=response['slave_count'], labels={})
-        yield metric
+        yield GaugeMetricFamily('locust_slave_count', 'Locust number of slaves', value=response['slave_count'])
 
-    metric = Metric('locust_fail_ratio', 'Locust failure ratio', 'gauge')
-    metric.add_sample('locust_fail_ratio', value=response['fail_ratio'], labels={})
+    yield GaugeMetricFamily('locust_fail_ratio', 'Locust failure ratio', value=response['fail_ratio'])
+
+    metric = GaugeMetricFamily('locust_state', 'State of the locust swarm', labels=['state'])
+    metric.add_metric([response['state']], 1)
     yield metric
 
-    metric = Metric('locust_state', 'State of the locust swarm', 'gauge')
-    metric.add_sample('locust_state', value=1, labels={'state':response['state']})
-    yield metric
-
-    for mtr in stats_metrics:
-        mtype = 'gauge'
-        if mtr in ['num_requests','num_failures']:
-            mtype = 'counter'
-        metric = Metric('locust_requests_'+mtr, 'Locust requests '+mtr, mtype)
+    stats_metrics_gause = ['avg_content_length','avg_response_time','current_rps','max_response_time','median_response_time','min_response_time']
+    stats_metrics_count = ['num_failures','num_requests']
+    for mtr in stats_metrics_gause:
+        metric = GaugeMetricFamily('locust_requests_' + mtr, 'locust requests ' + mtr, labels=['path', 'method'])
         for stat in response['stats']:
             if not 'Total' in stat['name']:
-                metric.add_sample('locust_requests_'+mtr, value=stat[mtr], labels={'path':stat['name'], 'method':stat['method']})
+                metric.add_metric([stat['name'], str(stat['method'])], stat[mtr])
         yield metric
+    for mtr in stats_metrics_count:
+        metric = CounterMetricFamily('locust_requests_' + mtr, 'locust requests ' + mtr, labels=['path', 'method'])
+        for stat in response['stats']:
+            if not 'Total' in stat['name']:
+                metric.add_metric([stat['name'], str(stat['method'])], stat[mtr])
+        yield metric
+
 
 if __name__ == '__main__':
   # Usage: locust_exporter.py <port> <locust_host:port>
