@@ -40,6 +40,9 @@ class LocustCollector(object):
     metric.add_metric([str(response['state'])], 1)
     yield metric
 
+    yield GaugeMetricFamily('locust_current_response_time_percentile_50', 'Locust current_response_time_percentile_50', value=response['current_response_time_percentile_50'])
+    yield GaugeMetricFamily('locust_current_response_time_percentile_95', 'Locust current_response_time_percentile_95', value=response['current_response_time_percentile_95'])
+
     stats_metrics_gause = ['avg_content_length','avg_response_time','current_rps','max_response_time','median_response_time','min_response_time']
     stats_metrics_count = ['num_failures','num_requests']
     for mtr in stats_metrics_gause:
