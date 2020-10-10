@@ -1,5 +1,11 @@
 # locust_exporter
-A locust exporter for prometheus
+A locust exporter for prometheus.
+
+Currently works with:
+- Locust v1.2.3
+  - https://github.com/locustio/locust
+- Prometheus client_python v0.8.0
+  - https://github.com/prometheus/client_python
 
 This is a simple exporter for http://locust.io metrics. You get all the necessary details about current tests and the state of the locust.
 
