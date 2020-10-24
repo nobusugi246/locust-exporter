@@ -15,7 +15,7 @@ class LocustCollector(object):
 
   def collect(self):
     # Fetch the JSON
-    url = 'http://' + self._ep + '/stats/requests'
+    url = f'http://{self._ep}/stats/requests'
     try:
         response = requests.get(url).content.decode('Utf-8')
     except requests.exceptions.ConnectionError:

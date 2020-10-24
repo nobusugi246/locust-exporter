@@ -21,4 +21,3 @@ i.e.:
 
 `./locust_exporter.py 1234 localhost:8089`
 
-![](https://github.com/mbolek/locust_exporter/blob/master/locust_exporter.png)
