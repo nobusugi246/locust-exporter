@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locust
+  namespace: common
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: locust
+  template:
+    metadata:
+      labels:
+        app: locust
+    spec:
+      containers:
+        - name: locust
+          image: locustio/locust:1.3.1
+          imagePullPolicy: IfNotPresent
+          args:
+            - |
+              locust -f /home/locust/locustfile.yaml
+          volumeMounts:
+            - name: locustfile-yaml
+              mountPath: /home/locust/locustfile.yaml
+              subPath: locustfile.yaml
+          resources:
+            requests:
+              cpu: 50m
+              memory: 100Mi
+            limits:
+              cpu: 1000m
+              memory: 100Mi
+          ports:
+            - containerPort: 8089
+              protocol: TCP
+        - name: locust-exporter
+          image: nobusugi246/locust-exporter:latest
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 50m
+              memory: 100Mi
+            limits:
+              cpu: 1000m
+              memory: 100Mi
+          ports:
+            - containerPort: 1234
+              protocol: TCP
+      volumes:
+        - name: locustfile-yaml
+          configMap:
+            name: locustfile-yaml

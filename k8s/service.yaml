@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: locust
+  namespace: common
+spec:
+  type: ClusterIP
+  ports:
+    - name: http-locust
+      port: 8089
+      protocol: TCP
+      targetPort: 8089
+    - name: http-locust-exporter
+      port: 1234
+      protocol: TCP
+      targetPort: 1234
+  selector:
+    app: locust
