@@ -19,11 +19,11 @@ spec:
           imagePullPolicy: IfNotPresent
           args:
             - |
-              locust -f /home/locust/locustfile.yaml
+              locustio/locust -f /home/locust/locustfile.py
           volumeMounts:
-            - name: locustfile-yaml
-              mountPath: /home/locust/locustfile.yaml
-              subPath: locustfile.yaml
+            - name: locustfile-py
+              mountPath: /home/locust/locustfile.py
+              subPath: locustfile.py
           resources:
             requests:
               cpu: 50m
@@ -48,6 +48,6 @@ spec:
             - containerPort: 1234
               protocol: TCP
       volumes:
-        - name: locustfile-yaml
+        - name: locustfile-py
           configMap:
-            name: locustfile-yaml
+            name: locustfile-py

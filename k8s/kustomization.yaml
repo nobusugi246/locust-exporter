@@ -8,6 +8,6 @@ resources:
 - service.yaml
 
 configMapGenerator:
-- name: locustfile-yaml
+- name: locustfile-py
   files:
-  - locustfile.yaml
+  - locustfile.py
