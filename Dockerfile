@@ -11,8 +11,7 @@ ARG HOME=/home/locust
 RUN groupadd -g ${gid} ${group} \
     && useradd -d "$HOME" -u ${uid} -g ${group} -m -s /bin/bash ${user} \
     && mkdir -p $HOME \
-    && chown ${uid}:${gid} $HOME \
-    && mkdir $HOME/.kube
+    && chown ${uid}:${gid} $HOME
 
 USER ${user}
 
