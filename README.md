@@ -1,4 +1,5 @@
-# locust_exporter
+# locust-exporter
+
 A locust exporter for prometheus.
 
 Currently works with:
@@ -15,9 +16,8 @@ Requirements: prometheus_client (sudo pip install prometheus_client)
 
 Running the exporter:
 
-`./locust_exporter.py <listen_port> <locust_host:port>`
+`./locust_exporter.py <listen port> <locust host:port>`
 
 i.e.:
 
 `./locust_exporter.py 1234 localhost:8089`
-

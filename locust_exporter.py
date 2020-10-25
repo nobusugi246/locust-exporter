@@ -1,7 +1,4 @@
 #!/usr/bin/python
-# -*- coding: UTF-8 -*-
-# Requires prometheus_client library:
-# sudo pip install prometheus_client
 from prometheus_client import start_http_server, Metric, REGISTRY
 from prometheus_client.core import GaugeMetricFamily, CounterMetricFamily
 import json
@@ -14,7 +11,7 @@ class LocustCollector(object):
     self._ep = ep
 
   def collect(self):
-    # Fetch the JSON
+    # Fetch the JSON from locust
     url = f'http://{self._ep}/stats/requests'
     try:
         response = requests.get(url).content.decode('Utf-8')
